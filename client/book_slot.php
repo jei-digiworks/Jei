@@ -833,15 +833,36 @@ if ($sunday_locked === false) {
         updateSummaryPrice();
     }
 
+    function timeToMinutes(timeStr) {
+        if (!timeStr) return 0;
+        const parts = timeStr.trim().split(/\s+/);
+        if (parts.length < 2) return 0;
+        const timeVal = parts[0];
+        const ampm = parts[1].toUpperCase();
+        
+        const timeParts = timeVal.split(':');
+        let hours = parseInt(timeParts[0], 10);
+        let minutes = parseInt(timeParts[1], 10);
+        
+        if (ampm === 'PM' && hours < 12) hours += 12;
+        if (ampm === 'AM' && hours === 12) hours = 0;
+        
+        return hours * 60 + minutes;
+    }
+
     function updateSummaryDatetime() {
         const dateOptions = { month: 'short', day: 'numeric' };
         const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', dateOptions);
         if (selectedSlotIds.length === 0) {
             document.getElementById('summary-datetime').innerText = 'Please select a time slot.';
         } else {
-            const timeRanges = selectedSlotTimes.map(t => `${t.start}–${t.end}`).join(', ');
+            // Sort selected times by start time and merge into a single unified range
+            const sortedTimes = [...selectedSlotTimes].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+            const rangeStart = sortedTimes[0].start;
+            const rangeEnd = sortedTimes[sortedTimes.length - 1].end;
+            
             document.getElementById('summary-datetime').innerText =
-                `${formattedDate} • ${timeRanges}`;
+                `${formattedDate} • ${rangeStart}–${rangeEnd}`;
         }
     }
 
