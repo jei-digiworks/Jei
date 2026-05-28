@@ -1,0 +1,16 @@
+# Logs
+logs/
+*.log
+
+# Temp/Uploads/Receipts
+uploads/
+receipts/
+storage/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Private Credentials
+config/credentials.php
+
